@@ -117,7 +117,7 @@ class GPRModel {
                 sy2  = rinvgamma(post_shape, post_scale);
                 sy2I = sy2 * I;
             }
-            /* notice update_eta() returns 1 if the proposal is accepted 
+            /* notice update_eta() returns 1 if the proposal is accepted
              * and 0 if it is not; this is useful for proposal tuning
              */
             int update_eta() {
@@ -166,6 +166,13 @@ class GPRModel {
                 int acceptances = 0;
                 bool stop_tuning = false;
                 int loops_w_hi_rates = 0; // for detecting problems
+                /* Warm up beta */
+                f.fill(0);
+                sy2I = I;
+                for ( arma::uword s = 0; s < 1000; ++s ) {
+                    Rprintf("\rWarming up beta: %i / 1000", s+1);
+                    update_beta();
+                }
                 for ( arma::uword i = 0; i < maxloops; ++i ) {
                     if ( stop_tuning ) {
                         break;
@@ -328,7 +335,7 @@ class GPRZModel {
                 sy2  = rinvgamma(post_shape, post_scale);
                 sy2I = sy2 * I;
             }
-            /* notice update_eta() returns 1 if the proposal is accepted 
+            /* notice update_eta() returns 1 if the proposal is accepted
              * and 0 if it is not; this is useful for proposal tuning
              */
             int update_eta() {
